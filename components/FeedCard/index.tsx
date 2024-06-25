@@ -36,7 +36,7 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
             Kamal
           </h5>
           {/* <p>{data.content}</p> */}
-          <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           {/* {data.imageURL && (
             <Image src={data.imageURL} alt="image" width={400} height={400} />
           )} */}

@@ -5,7 +5,6 @@ import { getUserByIdQuery } from "@/graphql/query/user";
 import { User } from "@/gql/graphql";
 import { Suspense } from "react";
 import UserProfileContent from "@/components/UserProfile/UserProfileContent";
-import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 // import Twitterlayout from "@/components/TwitterLayout";
 // import UserProfileContent from "@/components/UserProfile/UserProfileContent";
 

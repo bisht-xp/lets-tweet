@@ -1,3 +1,4 @@
+"use client";
 import { useCurrentUser } from "@/hooks/user";
 import React, { useCallback, useMemo } from "react";
 import Image from "next/image";
@@ -10,6 +11,7 @@ import { graphqlClient } from "@/clients/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import Login from "../Login";
 
 interface TwitterSidebarButton {
   title: string;
@@ -71,27 +73,6 @@ const Twitterlayout: React.FC<TwitterlayoutProps> = (props) => {
     [user?.id]
   );
 
-  const handleLoginWithGoogle = useCallback(
-    async (cred: CredentialResponse) => {
-      const googleToken = cred.credential;
-      if (!googleToken) return toast.error(`Google token not found`);
-
-      const { verifyGoogleToken } = await graphqlClient.request(
-        verifyUserGoogleTokenQuery,
-        { token: googleToken }
-      );
-
-      toast.success("Verified Success");
-      console.log(verifyGoogleToken);
-
-      if (verifyGoogleToken)
-        window.localStorage.setItem("__twitter_token", verifyGoogleToken);
-
-      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
-    },
-    [queryClient]
-  );
-
   return (
     <div>
       <div className="grid grid-cols-12 h-screen w-screen sm:px-56">
@@ -147,12 +128,7 @@ const Twitterlayout: React.FC<TwitterlayoutProps> = (props) => {
           {props.children}
         </div>
         <div className="col-span-0 sm:col-span-3 p-5">
-          {!user && (
-            <div className="p-5 bg-slate-700 rounded-lg">
-              <h1 className="my-2 text-2xl">New to Twitter?</h1>
-              <GoogleLogin onSuccess={handleLoginWithGoogle} />
-            </div>
-          )}
+          {!user && <Login />}
           {/* //   : (
         //     <div className="px-4 py-3 bg-slate-800 rounded-lg">
         //       <h1 className="my-2 text-2xl mb-5">Users you may know</h1>

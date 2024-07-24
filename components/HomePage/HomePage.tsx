@@ -5,6 +5,10 @@ import React, { Suspense, useCallback, useState } from "react";
 import FeedCard from "../FeedCard";
 import { Tweet } from "@/gql/graphql";
 import { BiImageAlt } from "react-icons/bi";
+import { graphqlClient } from "@/clients/api";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { getSignedURLForTweetQuery } from "@/graphql/query/tweet";
 
 const HomePage = () => {
   const [content, setContent] = useState("");
@@ -14,24 +18,52 @@ const HomePage = () => {
   const { mutateAsync } = useCreateTweets();
   const { tweets = [] } = useGetAllTweets();
 
+  const handleInputChangeFile = useCallback((input: HTMLInputElement) => {
+    return async (event: Event) => {
+      event.preventDefault();
+      const file: File | null | undefined = input.files?.item(0);
+      if (!file) return;
+
+      const { getSignedURLForTweet } = await graphqlClient.request(
+        getSignedURLForTweetQuery,
+        {
+          imageName: file.name,
+          imageType: file.type,
+        }
+      );
+
+      if (getSignedURLForTweet) {
+        toast.loading("Uploading...", { id: "2" });
+        await axios.put(getSignedURLForTweet, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        toast.success("Upload Completed", { id: "2" });
+        const url = new URL(getSignedURLForTweet);
+        const myFilePath = `${url.origin}${url.pathname}`;
+        setImageURL(myFilePath);
+      }
+    };
+  }, []);
+
   const handleSelectImage = useCallback(() => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
 
-    // const handlerFn = handleInputChangeFile(input);
+    const handlerFn = handleInputChangeFile(input);
 
-    // input.addEventListener("change", handlerFn);
+    input.addEventListener("change", handlerFn);
 
     input.click();
-  }, []);
+  }, [handleInputChangeFile]);
 
   const handleCreateTweet = useCallback(async () => {
     await mutateAsync({
       content,
       imageURL,
     });
-
     setContent("");
     setImageURL("");
   }, [mutateAsync, content, imageURL]);

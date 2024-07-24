@@ -5,16 +5,6 @@ import { getUserByIdQuery } from "@/graphql/query/user";
 import { User } from "@/gql/graphql";
 import { Suspense } from "react";
 import UserProfileContent from "@/components/UserProfile/UserProfileContent";
-// import Twitterlayout from "@/components/TwitterLayout";
-// import UserProfileContent from "@/components/UserProfile/UserProfileContent";
-
-// const TwitterLayout = dynamic(() => import("@/components/TwitterLayout"), {
-//   ssr: false,
-// });
-// const UserProfileContent = dynamic(
-//   () => import("@/components/UserProfile/UserProfileContent"),
-//   { ssr: false }
-// );
 
 async function getUserData(id: string) {
   if (!id) return null;

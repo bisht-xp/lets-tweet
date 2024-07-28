@@ -3,7 +3,7 @@ import { GraphQLClient } from "graphql-request";
 const isClient = typeof window !== "undefined";
 
 export const graphqlClient = new GraphQLClient(
-  "https://d3ep9b11jxsl0q.cloudfront.net/graphql",
+  process.env.NEXT_PUBLIC_API_URL as string,
   {
     headers: () => ({
       Authorization: isClient

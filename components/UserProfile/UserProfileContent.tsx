@@ -8,37 +8,48 @@ import FeedCard from "@/components/FeedCard";
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { graphqlClient } from "@/clients/api";
-// import {
-//   followUserMutation,
-//   unfollowUserMutation,
-// } from "@/graphql/mutation/user";
+import {
+  followUserMutation,
+  unfollowUserMutation,
+} from "@/graphql/mutation/user";
 
 function UserProfileContent({ userInfo }: { userInfo: User }) {
-  //   const { user } = useCurrentUser();
   const { user: currentUser } = useCurrentUser();
   const queryClient = useQueryClient();
 
-  //   const amIFollowing = useMemo(() => {
-  //     if (!userInfo) return false;
-  //     return (currentUser?.following?.findIndex(el => el?.id === userInfo?.id) ?? -1) >= 0;
-  //   }, [currentUser?.following, userInfo]);
+  
+  const amIFollowing = useMemo(() => {
+    if (!userInfo) return false;
+    return (
+      (currentUser?.following?.findIndex(
+        (el) => el?.id === userInfo?.id
+      ) ?? -1) >= 0
+    );
+  }, [currentUser?.following, userInfo]);
 
-  //   const handleFollowUser = useCallback(async () => {
-  //     if (!userInfo?.id) return;
-  //     await graphqlClient.request(followUserMutation, { to: userInfo?.id });
-  //     await queryClient.invalidateQueries(["curent-user"]);
-  //   }, [userInfo?.id, queryClient]);
+  const handleFollowUser = useCallback(async () => {
+    if (!userInfo?.id) return;
 
-  //   const handleUnfollowUser = useCallback(async () => {
-  //     if (!userInfo?.id) return;
-  //     await graphqlClient.request(unfollowUserMutation, { to: userInfo?.id });
-  //     await queryClient.invalidateQueries(["curent-user"]);
-  //   }, [userInfo?.id, queryClient]);
+    await graphqlClient.request(followUserMutation, { to: userInfo?.id });
+    await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+  }, [userInfo?.id, queryClient]);
 
-  //   console.log("userInfo", userInfo);
+  const handleUnfollowUser = useCallback(async () => {
+    if (!userInfo?.id) return;
+
+    await graphqlClient.request(unfollowUserMutation, {
+      to: userInfo?.id,
+    });
+    await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+  }, [userInfo?.id, queryClient]);
+
+
+  console.log("userInfo: ", userInfo);
+
+
   return (
     <div>
-      <nav className="flex items-center gap-3 py-3 px-3">
+      <nav className="flex items-center gap-3 py-3 px-3 overflow-hidden">
         <BsArrowLeftShort className="text-4xl" />
         <div>
           <h1 className="text-2xl font-bold">
@@ -64,26 +75,26 @@ function UserProfileContent({ userInfo }: { userInfo: User }) {
         </h1>
         <div className="flex justify-between items-center">
           <div className="flex gap-4 mt-2 text-sm text-gray-400">
-            {/* <span>{userInfo.followers?.length} followers</span> */}
-            {/* <span>{userInfo.following?.length} following</span> */}
+            <span>{userInfo.followers?.length} followers</span>
+            <span>{userInfo.following?.length} following</span>
           </div>
           {currentUser?.id !== userInfo.id && (
             <>
-              {/* {amIFollowing ? ( */}
-              <button
-                //   onClick={handleUnfollowUser}
-                className="bg-white text-black px-3 py-1 rounded-full text-sm"
-              >
-                Unfollow
-              </button>
-              {/* ) : ( */}
-              <button
-                //   onClick={handleFollowUser}
-                className="bg-white text-black px-3 py-1 rounded-full text-sm"
-              >
-                Follow
-              </button>
-              {/* )} */}
+              {amIFollowing ? (
+                <button
+                  onClick={handleUnfollowUser}
+                  className="bg-white text-black px-3 py-1 rounded-full text-sm"
+                >
+                  Unfollow
+                </button>
+              ) : (
+                <button
+                  onClick={handleFollowUser}
+                  className="bg-white text-black px-3 py-1 rounded-full text-sm"
+                >
+                  Follow
+                </button>
+              )}
             </>
           )}
         </div>
